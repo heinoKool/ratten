@@ -1,0 +1,526 @@
+<!doctype html>
+<html lang="de">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>HAFTBEFEHL // ZUGANG</title>
+		<style>
+			:root {
+				--bg0: #07060a;
+				--bg1: #0b0820;
+				--ink: #e9e6ff;
+				--muted: rgba(233, 230, 255, 0.65);
+				--neonPink: #ff2bd6;
+				--neonCyan: #19f7ff;
+				--neonViolet: #8b5cff;
+				--danger: #ff3b62;
+				--ok: #26ff9a;
+				--glass: rgba(255, 255, 255, 0.06);
+				--glass2: rgba(255, 255, 255, 0.10);
+				--border: rgba(255, 255, 255, 0.16);
+				--shadow: 0 18px 70px rgba(0, 0, 0, 0.65);
+				--radius: 18px;
+			}
+
+			* {
+				box-sizing: border-box;
+			}
+
+			html,
+			body {
+				height: 100%;
+			}
+
+			body {
+				margin: 0;
+				color: var(--ink);
+				font: 16px/1.4 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto,
+					Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+				background:
+					radial-gradient(1000px 700px at 15% 20%, rgba(255, 43, 214, 0.18), transparent 60%),
+					radial-gradient(900px 650px at 85% 10%, rgba(25, 247, 255, 0.15), transparent 62%),
+					radial-gradient(900px 650px at 55% 85%, rgba(139, 92, 255, 0.16), transparent 60%),
+					linear-gradient(180deg, var(--bg0), var(--bg1));
+				overflow-x: hidden;
+			}
+
+			/* Subtle scanlines */
+			body::before {
+				content: "";
+				position: fixed;
+				inset: 0;
+				pointer-events: none;
+				background: repeating-linear-gradient(
+					180deg,
+					rgba(255, 255, 255, 0.035) 0px,
+					rgba(255, 255, 255, 0.035) 1px,
+					rgba(0, 0, 0, 0) 3px,
+					rgba(0, 0, 0, 0) 6px
+				);
+				mix-blend-mode: overlay;
+				opacity: 0.35;
+			}
+
+			/* Soft vignette */
+			body::after {
+				content: "";
+				position: fixed;
+				inset: 0;
+				pointer-events: none;
+				background: radial-gradient(
+					800px 520px at 50% 35%,
+					rgba(0, 0, 0, 0) 0%,
+					rgba(0, 0, 0, 0.22) 50%,
+					rgba(0, 0, 0, 0.65) 100%
+				);
+			}
+
+			.wrap {
+				min-height: 100dvh;
+				display: grid;
+				place-items: center;
+				padding: 28px 16px;
+			}
+
+			.card {
+				width: min(860px, 100%);
+				background: linear-gradient(180deg, var(--glass), rgba(255, 255, 255, 0.03));
+				border: 1px solid var(--border);
+				border-radius: var(--radius);
+				box-shadow: var(--shadow);
+				backdrop-filter: blur(12px);
+				-webkit-backdrop-filter: blur(12px);
+				position: relative;
+				overflow: hidden;
+			}
+
+			.card::before {
+				content: "";
+				position: absolute;
+				inset: -2px;
+				background: conic-gradient(
+					from 180deg at 50% 50%,
+					rgba(25, 247, 255, 0.35),
+					rgba(255, 43, 214, 0.28),
+					rgba(139, 92, 255, 0.30),
+					rgba(25, 247, 255, 0.35)
+				);
+				filter: blur(18px);
+				opacity: 0.35;
+				pointer-events: none;
+			}
+
+			header {
+				padding: 28px 26px 10px;
+				position: relative;
+			}
+
+			.tag {
+				display: inline-flex;
+				gap: 10px;
+				align-items: center;
+				padding: 8px 12px;
+				border-radius: 999px;
+				border: 1px solid rgba(255, 255, 255, 0.14);
+				background: rgba(0, 0, 0, 0.18);
+				color: var(--muted);
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				font-size: 12px;
+			}
+
+			.dot {
+				width: 8px;
+				height: 8px;
+				border-radius: 50%;
+				background: var(--neonCyan);
+				box-shadow: 0 0 18px rgba(25, 247, 255, 0.9);
+			}
+
+			h1 {
+				margin: 14px 0 8px;
+				font-size: clamp(28px, 4.6vw, 54px);
+				line-height: 1.02;
+				letter-spacing: 0.02em;
+				text-transform: uppercase;
+			}
+
+			.glitch {
+				position: relative;
+				text-shadow:
+					0 0 24px rgba(255, 43, 214, 0.25),
+					0 0 18px rgba(25, 247, 255, 0.18);
+			}
+
+			.glitch::before,
+			.glitch::after {
+				content: attr(data-text);
+				position: absolute;
+				left: 0;
+				top: 0;
+				width: 100%;
+				opacity: 0.75;
+				pointer-events: none;
+			}
+
+			.glitch::before {
+				transform: translate(2px, -1px);
+				color: var(--neonCyan);
+				clip-path: polygon(0 0, 100% 0, 100% 42%, 0 38%);
+				filter: drop-shadow(0 0 10px rgba(25, 247, 255, 0.35));
+				animation: glitchTop 2.6s infinite linear;
+			}
+
+			.glitch::after {
+				transform: translate(-2px, 1px);
+				color: var(--neonPink);
+				clip-path: polygon(0 58%, 100% 62%, 100% 100%, 0 100%);
+				filter: drop-shadow(0 0 10px rgba(255, 43, 214, 0.32));
+				animation: glitchBottom 2.1s infinite linear;
+			}
+
+			@keyframes glitchTop {
+				0%,
+				100% {
+					clip-path: polygon(0 0, 100% 0, 100% 42%, 0 38%);
+				}
+				34% {
+					clip-path: polygon(0 0, 100% 0, 100% 22%, 0 28%);
+				}
+				67% {
+					clip-path: polygon(0 0, 100% 0, 100% 55%, 0 48%);
+				}
+			}
+
+			@keyframes glitchBottom {
+				0%,
+				100% {
+					clip-path: polygon(0 58%, 100% 62%, 100% 100%, 0 100%);
+				}
+				26% {
+					clip-path: polygon(0 72%, 100% 68%, 100% 100%, 0 100%);
+				}
+				61% {
+					clip-path: polygon(0 48%, 100% 56%, 100% 100%, 0 100%);
+				}
+			}
+
+			.sub {
+				margin: 0;
+				color: var(--muted);
+				max-width: 62ch;
+			}
+
+			main {
+				padding: 18px 26px 26px;
+				display: grid;
+				gap: 14px;
+				position: relative;
+			}
+
+			.panel {
+				border-radius: 14px;
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				background: rgba(0, 0, 0, 0.22);
+				padding: 16px;
+			}
+
+			label {
+				display: block;
+				font-size: 12px;
+				color: var(--muted);
+				text-transform: uppercase;
+				letter-spacing: 0.14em;
+				margin-bottom: 10px;
+			}
+
+			.row {
+				display: grid;
+				gap: 12px;
+				grid-template-columns: 1fr;
+			}
+
+			@media (min-width: 760px) {
+				.row {
+					grid-template-columns: 1fr auto;
+					align-items: center;
+				}
+			}
+
+			input[type="text"] {
+				width: 100%;
+				padding: 14px 14px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 255, 255, 0.14);
+				background: rgba(10, 8, 20, 0.55);
+				color: var(--ink);
+				outline: none;
+				box-shadow:
+					inset 0 0 0 1px rgba(0, 0, 0, 0.3),
+					0 0 0 rgba(0, 0, 0, 0);
+				transition: box-shadow 140ms ease, border-color 140ms ease;
+			}
+
+			input[type="text"]::placeholder {
+				color: rgba(233, 230, 255, 0.35);
+			}
+
+			input[type="text"]:focus {
+				border-color: rgba(25, 247, 255, 0.45);
+				box-shadow:
+					0 0 0 4px rgba(25, 247, 255, 0.12),
+					0 0 24px rgba(25, 247, 255, 0.18);
+			}
+
+			button {
+				padding: 12px 14px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 255, 255, 0.16);
+				background:
+					linear-gradient(180deg, rgba(255, 43, 214, 0.24), rgba(255, 43, 214, 0.12));
+				color: var(--ink);
+				font-weight: 700;
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				cursor: pointer;
+				transition: transform 90ms ease, box-shadow 120ms ease, border-color 120ms ease;
+				box-shadow:
+					0 0 0 rgba(0, 0, 0, 0),
+					0 0 26px rgba(255, 43, 214, 0.16);
+			}
+
+			button:hover {
+				border-color: rgba(255, 43, 214, 0.52);
+				box-shadow:
+					0 0 0 4px rgba(255, 43, 214, 0.10),
+					0 0 36px rgba(255, 43, 214, 0.22);
+			}
+
+			button:active {
+				transform: translateY(1px) scale(0.99);
+			}
+
+			.hint {
+				margin: 10px 0 0;
+				color: rgba(233, 230, 255, 0.52);
+				font-size: 13px;
+			}
+
+			.result {
+				min-height: 96px;
+				display: grid;
+				gap: 8px;
+				align-content: start;
+			}
+
+			.badge {
+				display: inline-flex;
+				align-items: center;
+				gap: 10px;
+				width: fit-content;
+				padding: 8px 10px;
+				border-radius: 999px;
+				border: 1px solid rgba(255, 255, 255, 0.14);
+				background: rgba(255, 255, 255, 0.05);
+				font-size: 12px;
+				letter-spacing: 0.12em;
+				text-transform: uppercase;
+				color: var(--muted);
+			}
+
+			.badge.ok {
+				border-color: rgba(38, 255, 154, 0.35);
+				color: rgba(38, 255, 154, 0.9);
+				box-shadow: 0 0 26px rgba(38, 255, 154, 0.12);
+			}
+
+			.badge.bad {
+				border-color: rgba(255, 59, 98, 0.35);
+				color: rgba(255, 59, 98, 0.92);
+				box-shadow: 0 0 26px rgba(255, 59, 98, 0.10);
+			}
+
+			.msg {
+				margin: 0;
+				padding: 12px 12px;
+				border-radius: 12px;
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				background: rgba(0, 0, 0, 0.18);
+			}
+
+			.msg.ok {
+				border-color: rgba(38, 255, 154, 0.28);
+				box-shadow: 0 0 30px rgba(38, 255, 154, 0.10);
+			}
+
+			.msg.bad {
+				border-color: rgba(255, 59, 98, 0.26);
+				box-shadow: 0 0 30px rgba(255, 59, 98, 0.08);
+			}
+
+			.shake {
+				animation: shake 380ms ease-in-out;
+			}
+
+			@keyframes shake {
+				0%,
+				100% {
+					transform: translateX(0);
+				}
+				20% {
+					transform: translateX(-6px);
+				}
+				40% {
+					transform: translateX(7px);
+				}
+				60% {
+					transform: translateX(-5px);
+				}
+				80% {
+					transform: translateX(4px);
+				}
+			}
+
+			footer {
+				padding: 10px 26px 22px;
+				color: rgba(233, 230, 255, 0.42);
+				font-size: 12px;
+				letter-spacing: 0.10em;
+				text-transform: uppercase;
+			}
+
+			kbd {
+				font: inherit;
+				padding: 2px 8px;
+				border-radius: 8px;
+				border: 1px solid rgba(255, 255, 255, 0.14);
+				background: rgba(255, 255, 255, 0.05);
+				color: rgba(233, 230, 255, 0.72);
+			}
+		</style>
+	</head>
+	<body>
+		<div class="wrap">
+			<div class="card" id="card">
+				<header>
+					<div class="tag"><span class="dot"></span> Wer sind die Ratten?</div>
+					<h1 class="glitch" data-text="Das Urteil von Offenbach">Das Urteil von Offenbach</h1>
+					<p class="sub">
+						Gib Code ein, <strong>Bruder</strong>. Stimmt, Tür geht auf. Stimmt nicht, Pech.
+					</p>
+				</header>
+
+				<main>
+					<section class="panel">
+						<label for="codes">CODE, BRUDER</label>
+						<div class="row">
+							<input
+								id="codes"
+								type="text"
+								inputmode="text"
+								autocomplete="off"
+								spellcheck="false"
+								placeholder="z.B. 243sdf, 12dfas, 33fdsfaf"
+								aria-describedby="hint"
+							/>
+							<button id="checkBtn" type="button">REIN DA</button>
+						</div>
+						<p class="hint" id="hint">
+							Leerzeichen egal. Reihenfolge egal. Groß/klein egal, Chabo.
+							<span aria-hidden="true">(Drück <kbd>↵</kbd>)</span>
+						</p>
+					</section>
+
+					<section class="panel result" aria-live="polite" aria-atomic="true">
+						<div id="status" class="badge">STATUS: WARTE</div>
+						<p id="message" class="msg">
+							Wallah, gib Code ein.
+						</p>
+					</section>
+				</main>
+
+				<footer>069, BRUDER. NUR ECHTE AZZLACKS.</footer>
+			</div>
+		</div>
+
+		<script>
+			// Hardcodierte Zielwerte (Leerzeichen/Reihenfolge egal; Groß-/Kleinschreibung egal)
+			const EXPECTED_VALUES = ["11", "22", "33ff"];
+			const EXPECTED_VALUES_NORMALIZED = EXPECTED_VALUES.map((v) => v.toLowerCase());
+
+			const inputEl = document.getElementById("codes");
+			const checkBtn = document.getElementById("checkBtn");
+			const statusEl = document.getElementById("status");
+			const messageEl = document.getElementById("message");
+			const cardEl = document.getElementById("card");
+
+			function parseCsv(input) {
+				return input
+					.split(",")
+					.map((v) => v.trim())
+					.map((v) => v.toLowerCase())
+					.filter((v) => v.length > 0);
+			}
+
+			function toMultisetMap(values) {
+				const map = new Map();
+				for (const v of values) {
+					map.set(v, (map.get(v) ?? 0) + 1);
+				}
+				return map;
+			}
+
+			function multisetEquals(a, b) {
+				if (a.size !== b.size) return false;
+				for (const [key, count] of a.entries()) {
+					if (b.get(key) !== count) return false;
+				}
+				return true;
+			}
+
+			function setResult(ok) {
+				if (ok) {
+					statusEl.className = "badge ok";
+					statusEl.textContent = "status: PASST, BRUDER";
+					messageEl.className = "msg ok";
+					messageEl.textContent =
+						"Wallah, richtig. Tür ist auf. Neon flackert — und du bist drin. Jetzt leise, Bruder.";
+          return;
+        }
+
+				statusEl.className = "badge bad";
+				statusEl.textContent = "status: FALSCH, AMK";
+				messageEl.className = "msg bad";
+				messageEl.textContent =
+					"Falscher Code. Tür bleibt zu. Versuch’s nochmal — sauber und ohne Stress.";
+			}
+
+			function shakeCard() {
+				cardEl.classList.remove("shake");
+				// reflow to restart animation
+				void cardEl.offsetWidth;
+				cardEl.classList.add("shake");
+			}
+
+			function check() {
+				const entered = parseCsv(inputEl.value);
+
+				const ok = multisetEquals(
+					toMultisetMap(entered),
+					toMultisetMap(EXPECTED_VALUES_NORMALIZED)
+				);
+
+				setResult(ok);
+				if (!ok) shakeCard();
+			}
+
+			checkBtn.addEventListener("click", check);
+			inputEl.addEventListener("keydown", (e) => {
+				if (e.key === "Enter") {
+					e.preventDefault();
+					check();
+				}
+			});
+		</script>
+	</body>
+</html>
